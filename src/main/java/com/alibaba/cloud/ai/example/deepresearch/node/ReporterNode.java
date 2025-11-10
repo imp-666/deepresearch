@@ -24,11 +24,11 @@ import com.alibaba.cloud.ai.example.deepresearch.model.req.GraphId;
 import com.alibaba.cloud.ai.example.deepresearch.service.ReportService;
 import com.alibaba.cloud.ai.example.deepresearch.service.SessionContextService;
 import com.alibaba.cloud.ai.example.deepresearch.util.StateUtil;
+import com.alibaba.cloud.ai.example.deepresearch.util.convert.FluxConverter;
 import com.alibaba.cloud.ai.graph.GraphResponse;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import com.alibaba.cloud.ai.graph.state.strategy.ReplaceStrategy;
-import com.alibaba.cloud.ai.graph.streaming.FluxConverter;
 import com.alibaba.cloud.ai.graph.streaming.StreamingOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +143,8 @@ public class ReporterNode implements NodeAction {
 				}
 				return Map.of("final_report", finalReport, "thread_id", threadId);
 			})
-			.build(streamResult);
+			.buildWithChatResponse(streamResult);
+
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("final_report", generator);
 		resultMap.put("thread_id", threadId);

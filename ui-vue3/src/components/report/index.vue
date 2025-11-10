@@ -272,7 +272,7 @@ const processJsonNode = (node: any) => {
         title = node.displayTitle
         description = '正在收集和分析背景信息'
         if(node.siteInformation && Array.isArray(node.siteInformation)) {
-          content = h(ReferenceSources, { sources: node.siteInformation })
+          content = h(ReferenceSources, { sources: node.siteInformation[0] })
           sources.value = node.siteInformation
         }
         break
@@ -307,10 +307,14 @@ const processJsonNode = (node: any) => {
         title = node.displayTitle
         description = '研究完成'
         endFlag.value = true
+        if(node.content){
+          content = h(MD, { content: node.content.final_report })
+          endContent.value = node.content.final_report
+        }
         break
 
       default:
-        console.log('default', node)
+        // console.log('default', node)
         return
     }
     const item: ThoughtChainItem = {

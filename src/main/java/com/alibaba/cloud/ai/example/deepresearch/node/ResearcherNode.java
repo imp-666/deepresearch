@@ -25,6 +25,7 @@ import com.alibaba.cloud.ai.example.deepresearch.service.SearchFilterService;
 import com.alibaba.cloud.ai.example.deepresearch.service.SearchInfoService;
 import com.alibaba.cloud.ai.example.deepresearch.service.multiagent.SmartAgentDispatcherService;
 import com.alibaba.cloud.ai.example.deepresearch.service.multiagent.SmartAgentSelectionHelperService;
+import com.alibaba.cloud.ai.example.deepresearch.util.convert.FluxConverter;
 import com.alibaba.cloud.ai.example.deepresearch.util.multiagent.AgentIntegrationUtil;
 import com.alibaba.cloud.ai.example.deepresearch.util.NodeStepTitleUtil;
 import com.alibaba.cloud.ai.example.deepresearch.util.ReflectionProcessor;
@@ -33,7 +34,6 @@ import com.alibaba.cloud.ai.example.deepresearch.util.StateUtil;
 import com.alibaba.cloud.ai.graph.GraphResponse;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
-import com.alibaba.cloud.ai.graph.streaming.FluxConverter;
 import com.alibaba.cloud.ai.graph.streaming.StreamingOutput;
 import com.alibaba.cloud.ai.toolcalling.jinacrawler.JinaCrawlerService;
 import com.alibaba.cloud.ai.toolcalling.searches.SearchEnum;
@@ -128,9 +128,9 @@ public class ResearcherNode implements NodeAction {
 			messages.add(taskMessage);
 
 			// Add researcher-specific citation reminder
-			Message citationMessage = new UserMessage(
-					"IMPORTANT: DO NOT include inline citations in the text. Instead, track all sources and include a References section at the end using link reference format. Include an empty line between each citation for better readability. Use this format for each reference:\n- [Source Title](URL)\n\n- [Another Source](URL)");
-			messages.add(citationMessage);
+            Message citationMessage = new UserMessage(
+                    "IMPORTANT: DO NOT include inline citations in the text. Instead, track all sources and include a References section at the end using link reference format. Include an empty line between each citation for better readability. Use this format for each reference:\\n- [Source Title](URL)\\n- [Source Title](URL)");
+            messages.add(citationMessage);
 
 			logger.debug("{} Node messages: {}", nodeName, messages);
 
@@ -164,9 +164,9 @@ public class ResearcherNode implements NodeAction {
 			siteInformation.addAll(searchResults);
 			updated.put("site_information", siteInformation);
 
-			messages.add(new UserMessage("以下是搜索结果：\n\n" + searchResults.stream().map(r -> {
-				return String.format("标题: %s\n权重: %s\n内容: %s\n", r.get("title"), r.get("weight"), r.get("content"));
-			}).collect(Collectors.joining("\n\n"))));
+            messages.add(new UserMessage("以下是搜索结果：\n\n" + searchResults.stream().map(r -> {
+                return String.format("标题: %s\n权重: %s\n内容: %s\nurl: %s\n", r.get("title"), r.get("weight"), r.get("content"), r.get("url"));
+            }).collect(Collectors.joining("\n\n"))));
 
 			Flux<ChatResponse> streamResult = requestSpec.messages(messages)
 				.stream()
@@ -197,7 +197,7 @@ public class ResearcherNode implements NodeAction {
 					updated.put("researcher_content_" + executorNodeId, researchContent);
 					return updated;
 				})
-				.build(streamResult);
+				.buildWithChatResponse(streamResult);
 
 			updated.put("researcher_content_" + executorNodeId, generator);
 			return updated;

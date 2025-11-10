@@ -20,11 +20,11 @@ import com.alibaba.cloud.ai.example.deepresearch.model.enums.StreamNodePrefixEnu
 import com.alibaba.cloud.ai.example.deepresearch.model.dto.Plan;
 import com.alibaba.cloud.ai.example.deepresearch.util.StateUtil;
 import com.alibaba.cloud.ai.example.deepresearch.util.TemplateUtil;
+import com.alibaba.cloud.ai.example.deepresearch.util.convert.FluxConverter;
 import com.alibaba.cloud.ai.graph.GraphResponse;
 import com.alibaba.cloud.ai.graph.OverAllState;
 import com.alibaba.cloud.ai.graph.action.NodeAction;
 import com.alibaba.cloud.ai.graph.state.strategy.ReplaceStrategy;
-import com.alibaba.cloud.ai.graph.streaming.FluxConverter;
 import com.alibaba.cloud.ai.graph.streaming.StreamingOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +111,7 @@ public class PlannerNode implements NodeAction {
 			.startingState(state)
 			.mapResult(response -> Map.of("planner_content",
 					Objects.requireNonNull(response.getResult().getOutput().getText())))
-			.build(streamResult);
+			.buildWithChatResponse(streamResult);
 
 		return Map.of("planner_content", generator);
 	}

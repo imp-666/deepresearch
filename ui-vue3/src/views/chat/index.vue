@@ -286,7 +286,6 @@ function openDeepResearch(threadId: string) {
 // 重写parseSuccessMessage以避免循环依赖
 const parseSuccessMessageRef = (msg: string) => {
   const result = parseSuccessMessage(msg)
-
   switch (result?.type) {
     case 'chat':
       return result.content
@@ -348,7 +347,6 @@ const bubbleList = computed(() => {
   if(isError) {
     return []
   }
-
   messageStore.history[convId] = messages.value
   return messages.value.map(({id, status, message}, idx) => {
       return {
